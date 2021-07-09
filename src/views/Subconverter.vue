@@ -258,6 +258,71 @@ export default {
         backendOptions: [{ value: "http://127.0.0.1:25500/sub?" }],
         remoteConfig: [
           {
+            label: "ACL4SSR",
+            options: [
+              {
+                label: "ACL4SSR_Online_Full_AdblockPlus 更多去广告",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_AdblockPlus.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_Google 全分组 重度用户 谷歌细分",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Google.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full 全分组 重度用户",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_MultiMode 全分组 重度用户 自动测速，故障转移，负载均衡",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_MultiMode.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_Netflix 全分组 重度用户 奈飞全量",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_Netflix.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Full_NoAuto 全分组 重度用户 无自动测速",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Full_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online.ini 默认版 有分组",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_AdblockPlus.ini 精简版 更多去广告",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_AdblockPlus.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_Fallback.ini 精简版 带故障转移",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_Fallback.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini.ini 精简版",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_MultiCountry.ini 精简版 有港美日",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiCountry.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_MultiMode.ini 精简版 自动测速，故障转移，负载均衡",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini"
+              },
+              {
+                label: "ACL4SSR_Online_Mini_NoAuto.ini 精简版 无自动测速",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online_NoAuto.ini 无自动测速",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoAuto.ini"
+              },
+              {
+                label: "ACL4SSR_Online_NoReject.ini 无广告拦截",
+                value: "https://raw.githubusercontent.com/DRJ31/ACL4SSR/master/Clash/config/ACL4SSR_Online_NoReject.ini"
+              }
+            ]
+          },
+          {
             label: "universal",
             options: [
               {
