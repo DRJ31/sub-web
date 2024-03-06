@@ -1,13 +1,8 @@
 # ---- Dependencies ----
-FROM node:lts-alpine AS dependencies
+FROM node:16-alpine AS build
 WORKDIR /app
-COPY package.json ./
+COPY . .
 RUN yarn install
-
-# ---- Build ----
-FROM dependencies AS build
-WORKDIR /app
-COPY . /app
 RUN yarn build
 
 FROM nginx:alpine
