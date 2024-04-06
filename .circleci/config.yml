@@ -15,8 +15,15 @@ jobs:
       - run:
           name: Push Docker Image
           command: |
+            dd=`git log | grep Date | head -n 2 | awk 'END{printf ("%s %d, %d",$3,$4,$6)}'`
+            IMAGE_TAG=`date -d $dd +"%y.%m.%d"`
+            TAG_SHORT=`date -d $dd +"%y.%m"`
+            echo $IMAGE_TAG
+            echo $TAG_SHORT
             docker login -u $DOCKER_USER -p $DOCKER_PASS
             docker push $IMAGE_NAME
+            docker push ${IMAGE_NAME}:${IMAGE_TAG}
+            docker push ${IMAGE_NAME}:${TAG_SHORT}
       - run:
           name: Deploy
           command: |
