@@ -10,7 +10,7 @@
             <div style="display: inline-block; position:absolute; right: 20px">{{ backendVersion }}</div>
           </div>
           <el-container>
-            <el-form :model="form" label-width="80px" label-position="left" style="width: 100%">
+            <el-form :model="form" label-width="140px" label-position="left" style="width: 100%">
               <el-form-item label="模式设置:">
                 <el-radio v-model="advanced" label="1">基础模式</el-radio>
                 <el-radio v-model="advanced" label="2">进阶模式</el-radio>
@@ -50,6 +50,16 @@
                 <el-form-item label="FileName:">
                   <el-input v-model="form.filename" placeholder="返回的订阅文件名" />
                 </el-form-item>
+
+                <el-form-item v-for="(param, i) in customParams" :key="i">
+                  <el-input slot="label" v-model="param.name" placeholder="自定义参数名">
+                    <div slot="suffix" style="width: 10px;">:</div>
+                  </el-input>
+                  <el-input v-model="param.value" placeholder="自定义参数内容">
+                      <el-button slot="suffix" type="text" icon="el-icon-delete" style="margin-right: 5px" @click="customParams.splice(i, 1)"/>
+                  </el-input>
+                </el-form-item>
+
                 <el-form-item label-width="0px">
                   <el-row type="flex">
                     <el-col>
@@ -74,6 +84,9 @@
                       <el-row>
                         <el-checkbox v-model="form.fdn" label="过滤非法节点"></el-checkbox>
                       </el-row>
+                      <el-row>
+                        <el-checkbox v-model="form.expand" label="规则展开"></el-checkbox>
+                      </el-row>
                       <el-button slot="reference">更多选项</el-button>
                     </el-popover>
                     <el-popover placement="bottom" style="margin-left: 10px">
@@ -87,6 +100,12 @@
                         <el-checkbox v-model="form.insert" label="网易云"></el-checkbox>
                       </el-row>
                       <el-button slot="reference">定制功能</el-button>
+                    </el-popover>
+                    <el-popover placement="top-end" title="添加自定义转换参数" trigger="hover">
+                      <el-link type="primary" :href="subDocAdvanced" target="_blank" icon="el-icon-info">参考文档</el-link>
+                      <el-button slot="reference" @click="addCustomParam" style="margin-left: 10px">
+                        <i class="el-icon-plus"></i>
+                      </el-button>
                     </el-popover>
                   </el-row>
                 </el-form-item>
@@ -178,6 +197,7 @@
 <script>
 const project = process.env.VUE_APP_PROJECT
 const remoteConfigSample = process.env.VUE_APP_SUBCONVERTER_REMOTE_CONFIG
+const subDocAdvanced = process.env.VUE_APP_SUBCONVERTER_DOC_ADVANCED
 const gayhubRelease = process.env.VUE_APP_BACKEND_RELEASE
 const defaultBackend = process.env.VUE_APP_SUBCONVERTER_DEFAULT_BACKEND + '/sub?'
 const shortUrlBackend = process.env.VUE_APP_MYURLS_API
@@ -367,6 +387,7 @@ export default {
         tfo: false,
         scv: true,
         fdn: false,
+        expand: true,
         appendType: false,
         insert: false, // 是否插入默认订阅的节点，对应配置项 insert_url
         new_name: true, // 是否使用 Clash 新字段
@@ -382,6 +403,8 @@ export default {
         }
       },
 
+      customParams: [],
+
       loading: false,
       customSubUrl: "",
       curtomShortSubUrl: "",
@@ -393,6 +416,7 @@ export default {
       uploadPassword: "",
       myBot: tgBotLink,
       sampleConfig: remoteConfigSample,
+      subDocAdvanced: subDocAdvanced,
 
       needUdp: false, // 是否需要添加 udp 参数
     };
@@ -449,6 +473,12 @@ export default {
       const url = "surge://install-config?url=";
       window.open(url + this.customSubUrl);
     },
+    addCustomParam(){
+      this.customParams.push({
+        name: "",
+        value: "",
+      })
+    },
     makeUrl() {
       if (this.form.sourceSubUrl === "" || this.form.clientType === "") {
         this.$message.error("订阅链接与客户端为必填项");
@@ -473,19 +503,19 @@ export default {
         this.form.insert;
 
       if (this.advanced === "2") {
-        if (this.form.remoteConfig !== "") {
+        if (this.form.remoteConfig) {
           this.customSubUrl +=
             "&config=" + encodeURIComponent(this.form.remoteConfig);
         }
-        if (this.form.excludeRemarks !== "") {
+        if (this.form.excludeRemarks) {
           this.customSubUrl +=
             "&exclude=" + encodeURIComponent(this.form.excludeRemarks);
         }
-        if (this.form.includeRemarks !== "") {
+        if (this.form.includeRemarks) {
           this.customSubUrl +=
             "&include=" + encodeURIComponent(this.form.includeRemarks);
         }
-        if (this.form.filename !== "") {
+        if (this.form.filename) {
           this.customSubUrl +=
             "&filename=" + encodeURIComponent(this.form.filename);
         }
@@ -505,6 +535,8 @@ export default {
           this.form.scv.toString() +
           "&fdn=" +
           this.form.fdn.toString() +
+          "&expand=" +
+          this.form.expand.toString() +
           "&sort=" +
           this.form.sort.toString();
 
@@ -523,6 +555,10 @@ export default {
 
           this.customSubUrl += "&new_name=" + this.form.new_name.toString();
         }
+
+        this.customParams.filter(param => param.name && param.value).forEach(param => {
+          this.customSubUrl += `&${encodeURIComponent(param.name)}=${encodeURIComponent(param.value)}`
+        })
       }
 
       this.$copyText(this.customSubUrl);
@@ -664,6 +700,14 @@ export default {
           // Parse the URL parameters
           const params = new URLSearchParams(url.search);
 
+          // Record parameters have been read
+          const getParam = params.get.bind(params)
+          const excludeParams = new Set()
+          params.get = key => {
+            excludeParams.add(key)
+            return getParam(key)
+          }
+
           // Get the 'target' parameter
           const target = params.get("target");
 
@@ -676,7 +720,7 @@ export default {
           }
 
           // Set other form properties based on the URL parameters
-          this.form.sourceSubUrl = params.get("url");
+          this.form.sourceSubUrl = params.get("url").replace(/\|/g, "\n");
           this.form.insert = params.get("insert") === "true";
           this.form.remoteConfig = params.get("config");
           this.form.excludeRemarks = params.get("exclude");
@@ -690,9 +734,17 @@ export default {
           this.form.fdn = params.get("fdn") === "true";
           this.form.sort = params.get("sort") === "true";
           this.form.udp = params.get("udp") === "true";
+          this.form.expand = params.get("expand") === "true";
           this.form.tpl.surge.doh = params.get("surge.doh") === "true";
           this.form.tpl.clash.doh = params.get("clash.doh") === "true";
           this.form.new_name = params.get("new_name") === "true";
+
+          // Filter custom parameters
+          this.customParams = Array.from(params
+            .entries()
+            .filter(e => !excludeParams.has(e[0]))
+            .map(e => ({ name: e[0], value: e[1] }))
+          )
 
           // Hide the configuration dialog
           this.dialogLoadConfigVisible = false;
